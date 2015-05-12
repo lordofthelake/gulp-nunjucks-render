@@ -6,7 +6,6 @@ var nunjucks = require('nunjucks');
 
 module.exports = function (options, environment) {
     options = options || {};
-    environment = environment || nunjucks;
 
     return through.obj(function (file, enc, cb) {
 
@@ -27,7 +26,8 @@ module.exports = function (options, environment) {
         }
 
         var _this = this;
-        environment.renderString(file.contents.toString(), data, function (err, result) {
+        var template = nunjucks.compile(file.contents.toString(), environment, file.path);
+        template.render(data, function (err, result) {
             if (err) {
                 _this.emit('error', new gutil.PluginError('gulp-nunjucks', err));
             }
